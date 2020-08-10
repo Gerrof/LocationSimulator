@@ -58,8 +58,8 @@ extension MapView {
 
             parent.location.$isAutoMoveEnabled.sink { value in
                 if value {
-                    // Enabled
-                    self.autoMoveTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { _ in
+                    // Enabled; Old Value for withTimeInterval: 1.0,
+                    self.autoMoveTimer = Timer.scheduledTimer(withTimeInterval: 0.5734, repeats: true, block: { _ in
                         self.move()
                     })
                 } else {
@@ -114,7 +114,7 @@ extension MapView {
 
                 remove()
 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.579) {
                     self.add()
 
                     if self.parent.location.isAutoFocusEnabled {
@@ -133,7 +133,7 @@ extension MapView {
             parent.mapView.addAnnotation(annotation)
         }
 
-        @objc func move() {
+        /*@objc func move() {
             if parent.location.coordinate.isInvalid {
                 return
             }
@@ -158,14 +158,61 @@ extension MapView {
             let newLng = longitude + lngDelta
 
             parent.location.coordinate = CLLocationCoordinate2D(latitude: newLat, longitude: newLng)
+        }*/
+        func randomDbl() -> Double {
+            if
+                Int64(Date().timeIntervalSince1970.rounded())%2 == 0
+            {
+                let virt = Double(Int64(Date().timeIntervalSince1970.rounded())%9) * 0.000001
+                if
+                    virt == 0
+                {
+                    return 0.000002
+                } else {
+                    return virt
+                }
+            } else {
+                let virt = Double(Int64(Date().timeIntervalSince1970.rounded())%9) * -0.000001
+                if
+                    virt == 0
+                {
+                    return -0.000002
+                } else {
+                    return virt
+                }
+            }
         }
+        @objc func move() {
+            if parent.location.coordinate.isInvalid {
+                return
+            }
+            let addLat = randomDbl()
+            let addLng = randomDbl()
+            let correctHeading = parent.mapView.camera.heading + parent.location.heading
 
+            let latitude = parent.location.coordinate.latitude
+            let longitude = parent.location.coordinate.longitude
+
+            let earthCircle = 2 * .pi * 6371000.0
+
+            let latDistance = parent.location.transportation.distance * cos(correctHeading * .pi / 180)
+            let latPerMeter = 360 / earthCircle
+            let latDelta = latDistance * latPerMeter
+            let newLat = latitude + latDelta + addLat
+
+            let lngDistance = parent.location.transportation.distance * sin(correctHeading * .pi / 180)
+            let earthRadiusAtLng = 6371000.0 * cos(newLat * .pi / 180)
+            let earthCircleAtLng = 2 * .pi * earthRadiusAtLng
+            let lngPerMeter = 360 / earthCircleAtLng
+            let lngDelta = lngDistance * lngPerMeter
+
+            let newLng = longitude + lngDelta  + addLng
+            parent.location.coordinate = CLLocationCoordinate2D(latitude: newLat, longitude: newLng)
+        }
         private func focus() {
             let coordinate = parent.location.coordinate
 
-            if coordinate.isInvalid {
-                return
-            }
+            if coordinate.isInvalid { return }
 
             let currentRegion = parent.mapView.region
             let span = MKCoordinateSpan(latitudeDelta: min(0.002, currentRegion.span.latitudeDelta),

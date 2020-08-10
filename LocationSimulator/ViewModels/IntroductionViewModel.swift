@@ -23,18 +23,20 @@ class IntroductionViewModel: ObservableObject {
     // MARK: - Actions
 
     func startPressed() {
-        if Process.isExists("idevice_id") == false {
+        if
+            Process.isExists("idevice_id") == false
+        {
             self.alert = ErrorAlert(title: "Library not found",
-                                    message: "The libimobiledevice library not found.\nPlease install the library from github repository.\nhttps://github.com/libimobiledevice/libimobiledevice")
+                                    message: "The libimobiledevice library not found. Please install the library from github repository.")
             return
         }
-
-        if Process.isExists("idevicelocation") == false {
+        if
+            Process.isExists("idevicesetlocation") == false || Process.isExists("idevicelocation") == false
+        {
             self.alert = ErrorAlert(title: "Library not found",
-                                    message: "The idevicelocation library not found.\nPlease install the library from github repository.\n\nhttps://github.com/JonGabilondoAngulo/idevicelocation")
+                                    message: "The idevicelocation library not found. Please install the library from github repository.")
             return
         }
-
         guard let device = Device.find() else {
             self.alert = ErrorAlert(title: "Device not connected",
                                     message: "No device connected.\nPlease connect the device and trust this mac.")

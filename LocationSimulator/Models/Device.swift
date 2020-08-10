@@ -41,7 +41,7 @@ class Device: NSObject {
         let lat = location.latitude
         let lng = location.longitude
 
-        var command = "idevicelocation -u \(UDID)"
+        var command = "idevicesetlocation -u \(UDID)"
 
         switch (lat, lng) {
         case (..<0, ..<0):
@@ -61,7 +61,7 @@ class Device: NSObject {
     }
 
     func reset() {
-        let output = Process.execute("idevicelocation -s -u \(UDID)")
+        let output = Process.execute("idevicesetlocation -s -u \(UDID)")
         if output.isEmpty == false {
             print(output)
         }

@@ -27,7 +27,7 @@ enum Transportation: Int, CaseIterable {
     var distance: Double {
         switch self {
         case .walk:
-            return 1.38 // 5km/h
+            return 0.69 // Changed Refresh intervall from 1 sec to an half Old Value:   5km/h = 1.38
         case .cycle:
             return 4.2  // 15km/h
         case .car:
